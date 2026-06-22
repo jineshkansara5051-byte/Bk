@@ -430,16 +430,17 @@
       <h2 class="section-title">Reserve Your<br><em>Experience</em></h2>
       <p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--text);margin-top:16px;opacity:0.8;">Secure your table at Highland Restro and let us craft an unforgettable evening for you.</p>
     </div>
-    <div class="reservation-form reveal">
-        <div class="form-group"><label>Your Name</label><input id="reservationName" type="text" placeholder="e.g. Priya Mehta"></div>
-      <div class="form-group"><label>Phone Number</label><input id="reservationPhone" type="tel" placeholder="+91 98765 43210"></div>
-      <div class="form-group"><label>Date</label><input id="reservationDate" type="date"></div>
-      <div class="form-group"><label>Time</label><select id="reservationTime"><option>7:00 PM</option><option>7:30 PM</option><option>8:00 PM</option><option>8:30 PM</option><option>9:00 PM</option></select></div>
-      <div class="form-group"><label>Guests</label><select id="reservationGuests"><option>2 Guests</option><option>3 Guests</option><option>4 Guests</option><option>5 Guests</option><option>6+ Guests</option></select></div>
-      <div class="form-group"><label>Occasion</label><select id="reservationOccasion"><option>None / Regular Dinner</option><option>Anniversary</option><option>Birthday</option><option>Business Dinner</option><option>Proposal</option></select></div>
-      <div class="form-group full"><label>Special Requests</label><textarea id="reservationRequests" placeholder="Dietary requirements, allergies, seating preferences..."></textarea></div>
-      <button class="form-submit" onclick="handleReservation()">Confirm Reservation</button>
-    </div>
+    <form id="reservationForm" class="reservation-form reveal" method="POST" target="reservationFrame">
+      <div class="form-group"><label>Your Name</label><input id="reservationName" name="name" type="text" placeholder="e.g. Priya Mehta"></div>
+      <div class="form-group"><label>Phone Number</label><input id="reservationPhone" name="phone" type="tel" placeholder="+91 98765 43210"></div>
+      <div class="form-group"><label>Date</label><input id="reservationDate" name="date" type="date"></div>
+      <div class="form-group"><label>Time</label><select id="reservationTime" name="time"><option>7:00 PM</option><option>7:30 PM</option><option>8:00 PM</option><option>8:30 PM</option><option>9:00 PM</option></select></div>
+      <div class="form-group"><label>Guests</label><select id="reservationGuests" name="guests"><option>2 Guests</option><option>3 Guests</option><option>4 Guests</option><option>5 Guests</option><option>6+ Guests</option></select></div>
+      <div class="form-group"><label>Occasion</label><select id="reservationOccasion" name="occasion"><option>None / Regular Dinner</option><option>Anniversary</option><option>Birthday</option><option>Business Dinner</option><option>Proposal</option></select></div>
+      <div class="form-group full"><label>Special Requests</label><textarea id="reservationRequests" name="requests" placeholder="Dietary requirements, allergies, seating preferences..."></textarea></div>
+      <button type="button" class="form-submit" onclick="handleReservation()">Confirm Reservation</button>
+    </form>
+    <iframe name="reservationFrame" style="display:none;"></iframe>
   </div>
 </section>
 
@@ -510,11 +511,11 @@ const DEFAULTS = {
     { tag:'Bar & Lounge', name:'Altitude Cocktails', desc:'Signature concoctions using house-infused spirits, mountain botanicals and hand-pressed fresh juices.', price:'from ₹280', img:'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=80' }
   ],
   specials: [
-    { name:'Truffle Risotto al Tartufo', desc:'Arborio rice · Black truffle · Aged Parmesan · Saffron', price:'₹780' },
+    { name:'Truffle Risotto al Tartufo'esc:'Kashmiri saffron · Honey · Rose water · Pistachio dust', price:'₹340' },
     { name:'Mushroom & Truffle Tart', desc:'Wild mushrooms · Black truffle · Gruyère · Fresh thyme', price:'₹680' },
     { name:'Highland Veg Wellington', desc:'Roasted vegetables · Spinach · Ricotta · Puff pastry · Herb jus', price:'₹840' },
-    { name:'Saffron Panna Cotta', desc:'Kashmiri saffron · Honey · Rose water · Pistachio dust', price:'₹340' },
-    { name:'Peak Mule Cocktail', desc:'House ginger brew · Highland vodka · Lime · Fresh mint', price:'₹380' }
+    { name:'Peak Mule Cocktail', desc:'House ginger brew · Highland vodka · Lime · Fresh mint', price:'₹380' },
+    { name:'Saffron Panna Cotta', desc:'Kashmiri saffron · Honey · Rose water · Pistachio dust', price:'₹340' }
   ],
   stats: [
     { icon:'🍽️', num:'120+', title:'Menu Items', desc:'A diverse menu spanning continents, curated to satisfy every palate.' },
@@ -655,15 +656,12 @@ reveals.forEach(r => obs.observe(r));
 function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
 function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
 function handleReservation() {
-  const endpoint = 'https://script.google.com/macros/s/AKfycbzmSscwFOQYUaZvAjMeQ4U0MvWqmAxeg1vVUu7vXzeG0XeAZ63qrUgWgvAMcGgr0CgM/exec';
+  const endpoint = 'https://script.google.com/macros/s/AKfycbyQMkrcwjL5FO7yHcsojSu2_1ePNCddSwfpEffkMXdRGfHC7TXcF_0lmE3E4I8dxGdX/exec';
   const btn = document.querySelector('.form-submit');
+  const form = document.getElementById('reservationForm');
   const name = document.getElementById('reservationName').value.trim();
   const phone = document.getElementById('reservationPhone').value.trim();
   const date = document.getElementById('reservationDate').value;
-  const time = document.getElementById('reservationTime').value;
-  const guests = document.getElementById('reservationGuests').value;
-  const occasion = document.getElementById('reservationOccasion').value;
-  const requests = document.getElementById('reservationRequests').value.trim();
 
   if (!name || !phone || !date) {
     alert('Please enter your name, phone number, and reservation date.');
@@ -672,23 +670,14 @@ function handleReservation() {
 
   btn.disabled = true;
   btn.textContent = 'Sending...';
+  form.action = endpoint;
+  form.submit();
 
-  fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name,
-      phone,
-      date,
-      time,
-      guests,
-      occasion,
-      requests
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data && data.status === 'success') {
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Confirm Reservation';
+    btn.style.background = '';
+    if (name && phone && date) {
       btn.textContent = '✓ Reservation Confirmed!';
       btn.style.background = '#4a7c59';
       document.getElementById('reservationName').value = '';
@@ -698,19 +687,8 @@ function handleReservation() {
       document.getElementById('reservationGuests').value = '2 Guests';
       document.getElementById('reservationOccasion').value = 'None / Regular Dinner';
       document.getElementById('reservationRequests').value = '';
-    } else {
-      throw new Error(data && data.message ? data.message : 'Failed to send reservation.');
     }
-  })
-  .catch(error => {
-    console.error(error);
-    alert('Unable to submit reservation. Please try again later.');
-    btn.textContent = 'Confirm Reservation';
-  })
-  .finally(() => {
-    btn.disabled = false;
-    setTimeout(() => { btn.textContent = 'Confirm Reservation'; btn.style.background = ''; }, 3000);
-  });
+  }, 1500);
 }
 // ==================== HIDDEN ADMIN MODE ====================
 const ADMIN_PASSWORD = '1';
