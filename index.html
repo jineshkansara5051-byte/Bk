@@ -656,7 +656,7 @@ reveals.forEach(r => obs.observe(r));
 function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
 function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
 function handleReservation() {
-  const endpoint = 'https://script.google.com/macros/s/AKfycbyQMkrcwjL5FO7yHcsojSu2_1ePNCddSwfpEffkMXdRGfHC7TXcF_0lmE3E4I8dxGdX/exec';
+  const endpoint = 'https://script.google.com/macros/s/AKfycbytN46pfFiCi9909D8rH15W14joKMQ27Vc9Tsg7czup--Ld3KQJBG1FFxcxKjoL91wR/exec';
   const btn = document.querySelector('.form-submit');
   const form = document.getElementById('reservationForm');
   const name = document.getElementById('reservationName').value.trim();
@@ -690,6 +690,34 @@ function handleReservation() {
     }
   }, 1500);
 }
+// ==================== GOOGLE SHEETS SYNC ====================
+const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbytN46pfFiCi9909D8rH15W14joKMQ27Vc9Tsg7czup--Ld3KQJBG1FFxcxKjoL91wR/exec';
+
+function pushDataToSheet(sheetName, data) {
+  return fetch(SHEET_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sheet: sheetName, data: data })
+  })
+  .then(r => r.json())
+  .then(result => {
+    if (!result.success) throw new Error(result.error || 'Sheet sync failed');
+    console.log('✓ Synced to sheet:', sheetName);
+    return result;
+  })
+  .catch(err => console.warn('Sheet sync failed:', err));
+}
+
+function syncAllDataToSheets() {
+  console.log('Syncing all data to Google Sheets...');
+  const keysToSync = ['menuItems', 'gallery', 'specials', 'testimonials', 'stats', 'navLinks', 'hours', 'contact'];
+  
+  keysToSync.forEach(key => {
+    const data = getData(key);
+    pushDataToSheet(key, data);
+  });
+}
+
 // ==================== HIDDEN ADMIN MODE ====================
 const ADMIN_PASSWORD = '1';
 const DATA_KEYS = ['menuItems','specials','stats','testimonials','gallery','navLinks','hours','contact'];
@@ -697,6 +725,8 @@ const DATA_KEYS = ['menuItems','specials','stats','testimonials','gallery','navL
 function saveData(key, value) {
   localStorage.setItem('hr_' + key, JSON.stringify(value));
   renderAll();
+  // Sync to Google Sheets when data is saved
+  setTimeout(() => pushDataToSheet(key, value), 500);
 }
 
 function resetData(key) {
