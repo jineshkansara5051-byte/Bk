@@ -95,7 +95,7 @@
   .menu-card-hover-hint { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: 0; transform: translateY(8px); transition: opacity .35s .08s, transform .35s .08s; }
   .menu-card:hover .menu-card-hover-hint { opacity: 1; transform: translateY(0); }
   .menu-card-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 80px; opacity: 0.08; }
-  .menu-cta { text-align: center; margin-top: 60px; }
+  .menu-cta { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 60px; }
 
   /* ── DISH DETAIL MODAL ── */
   .dish-modal-backdrop {
@@ -379,7 +379,8 @@
   </div>
   <div class="menu-grid reveal" id="menuGrid"></div>
   <div class="menu-cta reveal">
-    <a href="#reservation" class="btn-primary" style="display:inline-block">View Full Menu & Reserve</a>
+    <a href="#menu" class="btn-primary" style="display:inline-block">VIEW FULL MENU</a>
+    <a href="#reservation" class="btn-outline" style="display:inline-block">RESERVE YOUR TABLE</a>
   </div>
 </section>
 
@@ -691,7 +692,7 @@ function handleReservation() {
   }, 1500);
 }
 // ==================== GOOGLE SHEETS SYNC ====================
-const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbytN46pfFiCi9909D8rH15W14joKMQ27Vc9Tsg7czup--Ld3KQJBG1FFxcxKjoL91wR/exec';
+const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwZia3268IfA4nglvzWKXYd7saQIBt_5UooTYr31SpjTswbDHVi8wA7u_R9taP-OSjd/exec';
 
 function pushDataToSheet(sheetName, data) {
   return fetch(SHEET_ENDPOINT, {
